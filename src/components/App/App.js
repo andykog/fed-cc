@@ -9,14 +9,20 @@ class App extends React.Component {
     super();
     this.state = {
       player1: '',
-      player2: ''
+      player2: '',
+      board: [['', '', ''], ['', '', ''], ['', '', '']]
     };
+  }
+  handleCellClick = ({cIndex, rIndex}) => {
+    const board = this.state.board.map(row => [...row]);
+    board[rIndex][cIndex] = 'X';
+    this.setState({board});
   }
   render() {
     return (
       <div className={s.root}>
         <Registration onNewGame={({player1, player2}) => this.setState({player1, player2})}/>
-        <Game player1={this.state.player1} player2={this.state.player2}/>
+        <Game onCellClick={this.handleCellClick} board={this.state.board} player1={this.state.player1} player2={this.state.player2}/>
       </div>
     );
   }

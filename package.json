@@ -56,8 +56,5 @@
     "presets": [
       "wix"
     ]
-  },
-  "eslintConfig": {
-    "extends": "wix/react"
   }
 }

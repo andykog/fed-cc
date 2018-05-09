@@ -21,7 +21,7 @@ const appDriver = ({page}) => ({
     const p2LabelTestkit = await labelTestkitFactory({dataHook: 'p2-title', page});
     return p2LabelTestkit.getLabelText();
   },
-  clickACellAt: ({x, y}) => page.$$eval('td', (elements, _x, _y) => elements[_x + (_y * 3)], x, y),
+  clickACellAt: ({x, y}) => page.$$eval('td', (elements, _x, _y) => elements[_x + (_y * 3)].click(), x, y),
   getACellAt: ({x, y}) => page.$$eval('td', (elements, _x, _y) => elements[_x + (_y * 3)].innerText, x, y)
 });
 
@@ -50,7 +50,7 @@ describe('React application', () => {
     const player2 = 'Computer';
     await driver.navigate();
     await driver.newGame({player1, player2});
-
+    expect(await driver.getACellAt({x: 0, y: 0})).to.equal('');
     await driver.clickACellAt({x: 0, y: 0});
     expect(await driver.getACellAt({x: 0, y: 0})).to.equal('X');
   });
