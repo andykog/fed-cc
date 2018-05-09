@@ -25,12 +25,13 @@
     "react": "15.6.1",
     "react-dom": "15.6.1",
     "react-i18next": "~4.6.0",
+    "regenerator-runtime": "^0.11.0",
     "wix-axios-config": "latest",
     "wix-bootstrap-ng": "latest",
     "wix-express-csrf": "latest",
     "wix-express-require-https": "latest",
     "wix-run-mode": "latest",
-    "regenerator-runtime": "^0.11.0"
+    "wix-style-react": "^3.1.8"
   },
   "devDependencies": {
     "react-test-renderer": "~15.6.0",

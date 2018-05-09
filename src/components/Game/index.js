@@ -7,13 +7,14 @@ function Game({player1, player2}) {
     <div>
       <Label dataHook="p1-title">{player1}</Label>
       <Label dataHook="p2-title">{player2}</Label>
+      <table><tr><td>X</td></tr></table>
     </div>
-  )
+  );
 }
 
-Game.proptypes = {
-  player1: PropTypes.string,
-  player2: PropTypes.string,
-}
+Game.propTypes = {
+  player1: PropTypes.string.isRequired,
+  player2: PropTypes.string.isRequired,
+};
 
-export default Game
+export default Game;
