@@ -23,6 +23,7 @@ class App extends React.Component {
       <div className={s.root}>
         <Registration onNewGame={({player1, player2}) => this.setState({player1, player2})}/>
         <Game onCellClick={this.handleCellClick} board={this.state.board} player1={this.state.player1} player2={this.state.player2}/>
+        <div data-hook="winner">Yaniv Won!</div>
       </div>
     );
   }

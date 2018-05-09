@@ -22,7 +22,8 @@ const appDriver = ({page}) => ({
     return p2LabelTestkit.getLabelText();
   },
   clickACellAt: ({x, y}) => page.$$eval('td', (elements, _x, _y) => elements[_x + (_y * 3)].click(), x, y),
-  getACellAt: ({x, y}) => page.$$eval('td', (elements, _x, _y) => elements[_x + (_y * 3)].innerText, x, y)
+  getACellAt: ({x, y}) => page.$$eval('td', (elements, _x, _y) => elements[_x + (_y * 3)].innerText, x, y),
+  getWinnerMessage: () => page.$eval('[data-hook="winner"]', el => el.innerText)
 });
 
 let driver;
@@ -53,5 +54,18 @@ describe('React application', () => {
     expect(await driver.getACellAt({x: 0, y: 0})).to.equal('');
     await driver.clickACellAt({x: 0, y: 0});
     expect(await driver.getACellAt({x: 0, y: 0})).to.equal('X');
+  });
+
+  it('first user should win the game', async () => {
+    const player1 = 'Yaniv';
+    const player2 = 'Computer';
+    await driver.navigate();
+    await driver.newGame({player1, player2});
+    expect(await driver.getACellAt({x: 0, y: 0})).to.equal('');
+    expect(await driver.getACellAt({x: 0, y: 1})).to.equal('');
+    expect(await driver.getACellAt({x: 1, y: 0})).to.equal('');
+    expect(await driver.getACellAt({x: 1, y: 1})).to.equal('');
+    expect(await driver.getACellAt({x: 2, y: 0})).to.equal('');
+    expect(await driver.getWinnerMessage()).to.equal('Yaniv Won!');
   });
 });
