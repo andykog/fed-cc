@@ -23,7 +23,8 @@ const appDriver = ({page}) => ({
   },
   clickACellAt: ({x, y}) => page.$$eval('td', (elements, _x, _y) => elements[_x + (_y * 3)].click(), x, y),
   getACellAt: ({x, y}) => page.$$eval('td', (elements, _x, _y) => elements[_x + (_y * 3)].innerText, x, y),
-  getWinnerMessage: () => page.$eval('[data-hook="winner"]', el => el.innerText)
+  getWinnerMessage: () => page.$eval('[data-hook="winner"]', el => el.innerText),
+  isWinnerMessageVisible: async () => !!await page.$('[data-hook="winner"]')
 });
 
 let driver;
@@ -61,11 +62,12 @@ describe('React application', () => {
     const player2 = 'Computer';
     await driver.navigate();
     await driver.newGame({player1, player2});
-    expect(await driver.getACellAt({x: 0, y: 0})).to.equal('');
-    expect(await driver.getACellAt({x: 0, y: 1})).to.equal('');
-    expect(await driver.getACellAt({x: 1, y: 0})).to.equal('');
-    expect(await driver.getACellAt({x: 1, y: 1})).to.equal('');
-    expect(await driver.getACellAt({x: 2, y: 0})).to.equal('');
+    await driver.clickACellAt({x: 0, y: 0});
+    await driver.clickACellAt({x: 0, y: 1});
+    expect(await driver.isWinnerMessageVisible()).to.equal(false);
+    await driver.clickACellAt({x: 1, y: 0});
+    await driver.clickACellAt({x: 1, y: 1});
+    await driver.clickACellAt({x: 2, y: 0});
     expect(await driver.getWinnerMessage()).to.equal('Yaniv Won!');
   });
 });
