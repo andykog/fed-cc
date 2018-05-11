@@ -11,6 +11,28 @@ import {
   buttonTestkitFactory as enzymeButtonTestkitFactory
 } from 'wix-style-react/dist/testkit/enzyme';
 
+const appDriver = () => {
+  let wrapper;
+  return {
+    render: node => {
+      wrapper = mount(node,
+        {attachTo: document.createElement('div')}
+      );
+      return wrapper;
+    },
+    newGame: ({player1, player2}) => {
+      const p1InputTestkit = enzymeInputTestkitFactory({wrapper, dataHook: 'p1-input'});
+      const p2InputTestkit = enzymeInputTestkitFactory({wrapper, dataHook: 'p2-input'});
+      const buttonTestkit = enzymeButtonTestkitFactory({wrapper, dataHook: 'new-game'});
+      p1InputTestkit.enterText(player1);
+      p2InputTestkit.enterText(player2);
+      buttonTestkit.click();
+    },
+    clickACellAt: index => wrapper.find('td').at(index).simulate('click'),
+    getACellAt: index => wrapper.find('td').at(index).text(),
+    teardown: () => wrapper.detach()
+  };
+};
 
 const i18nData = {
   lng: 'en',
@@ -21,29 +43,26 @@ const i18nData = {
 };
 
 describe('App', () => {
-  let wrapper;
+  let driver;
 
-  afterEach(() => wrapper.detach());
+  beforeEach(() => {
+    driver = appDriver();
+  });
 
+  afterEach(() => driver.teardown());
   it('should show "O" after second use clicks', () => {
     const player1 = 'Yaniv';
     const player2 = 'Computer';
-    wrapper = mount(
+    driver.render(
       <I18nextProvider i18n={i18next.init(i18nData)}>
         <App/>
-      </I18nextProvider>,
-      {attachTo: document.createElement('div')}
+      </I18nextProvider>
     );
-    const p1InputTestkit = enzymeInputTestkitFactory({wrapper, dataHook: 'p1-input'});
-    const p2InputTestkit = enzymeInputTestkitFactory({wrapper, dataHook: 'p2-input'});
-    const buttonTestkit = enzymeButtonTestkitFactory({wrapper, dataHook: 'new-game'});
-    p1InputTestkit.enterText(player1);
-    p2InputTestkit.enterText(player2);
-    buttonTestkit.click();
 
-    wrapper.find('td').at(0).simulate('click');
-    wrapper.find('td').at(1).simulate('click');
+    driver.newGame({player1, player2});
+    driver.clickACellAt(0);
+    driver.clickACellAt(1);
 
-    expect(wrapper.find('td').at(1).text()).to.eq('O');
+    expect(driver.getACellAt(1)).to.eq('O');
   });
 });
