@@ -30,6 +30,7 @@ const appDriver = () => {
     },
     clickACellAt: index => wrapper.find('td').at(index).simulate('click'),
     getACellAt: index => wrapper.find('td').at(index).text(),
+    getWinnerMessage: () => wrapper.find('[data-hook="winner"]').text(),
     teardown: () => wrapper.detach()
   };
 };
@@ -64,5 +65,25 @@ describe('App', () => {
     driver.clickACellAt(1);
 
     expect(driver.getACellAt(1)).to.eq('O');
+  });
+
+  it('second player should win the game', () => {
+    const player1 = 'Yaniv';
+    const player2 = 'Computer';
+    driver.render(
+      <I18nextProvider i18n={i18next.init(i18nData)}>
+        <App/>
+      </I18nextProvider>
+    );
+
+    driver.newGame({player1, player2});
+    driver.clickACellAt(3);
+    driver.clickACellAt(0);
+    driver.clickACellAt(4);
+    driver.clickACellAt(1);
+    driver.clickACellAt(7);
+    driver.clickACellAt(2);
+
+    expect(driver.getWinnerMessage()).to.eq('Computer Won!');
   });
 });
