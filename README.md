@@ -26,13 +26,13 @@ npm test
 
 #### Part 1, class live coding (#part1 branch)
 
-"Baby steps" for a working skelaton, first player win:
+- "Baby steps" for a working skelaton, first player win:
 
-- Browser (e2e) test for new game
-- Browser (e2e) test for clicking an "X"
-- Browser (e2e) test for first player win
+  - Browser (e2e) test for new game
+  - Browser (e2e) test for clicking an "X"
+  - Browser (e2e) test for first player win
 
-Introducing Component test for second player click (and WallabyJS!!!)
+- Introducing Component test for second player click (and WallabyJS!!!)
 
 #### Part 2, workshop (for solution look at #part2-solution)
 
