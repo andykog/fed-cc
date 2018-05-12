@@ -1,6 +1,8 @@
 import React from 'react';
+import axios from 'axios';
 import Registration from '../Registration';
 import Game from '../Game';
+import Button from 'wix-style-react/Button';
 import s from './App.scss';
 import {gameStatus} from '../../gameService';
 
@@ -16,6 +18,7 @@ class App extends React.Component {
       board: [['', '', ''], ['', '', ''], ['', '', '']]
     };
   }
+
   handleCellClick = ({cIndex, rIndex}) => {
     const board = this.state.board.map(row => [...row]);
     board[rIndex][cIndex] = this.state.currentPlayer;
@@ -25,12 +28,31 @@ class App extends React.Component {
     const nextPlayer = this.state.currentPlayer === 'X' ? 'O' : 'X';
     this.setState({board, currentPlayer: nextPlayer});
   }
+
+  handleSave = async () => {
+    await axios.post('/api/game', {
+      board: this.state.board,
+      player1: this.state.player1,
+      player2: this.state.player2
+    });
+  }
+
+  handleLoad = async () => {
+    const res = await axios.get('/api/game');
+    const {board, player1, player2} = res.data;
+    this.setState({board, player1, player2});
+  }
+
   render() {
     return (
       <div className={s.root}>
         <Registration onNewGame={({player1, player2}) => this.setState({player1, player2})}/>
         <Game onCellClick={this.handleCellClick} board={this.state.board} player1={this.state.player1} player2={this.state.player2}/>
         {this.state.winner && <div data-hook="winner">{`${this.state.winner === 'X' ? this.state.player1 : this.state.player2} Won!`}</div>}
+        <div>
+          <Button dataHook="save-game" onClick={() => this.handleSave()}>Save Game</Button>
+          <Button dataHook="load-game" onClick={() => this.handleLoad()}>Load Game</Button>
+        </div>
       </div>
     );
   }

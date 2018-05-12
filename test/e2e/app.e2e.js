@@ -24,7 +24,15 @@ const appDriver = ({page}) => ({
   clickACellAt: ({x, y}) => page.$$eval('td', (elements, _x, _y) => elements[_x + (_y * 3)].click(), x, y),
   getACellAt: ({x, y}) => page.$$eval('td', (elements, _x, _y) => elements[_x + (_y * 3)].innerText, x, y),
   getWinnerMessage: () => page.$eval('[data-hook="winner"]', el => el.innerText),
-  isWinnerMessageVisible: async () => !!await page.$('[data-hook="winner"]')
+  isWinnerMessageVisible: async () => !!await page.$('[data-hook="winner"]'),
+  saveGame: async () => {
+    const buttonTestkit = await buttonTestkitFactory({dataHook: 'save-game', page});
+    await buttonTestkit.click();
+  },
+  loadGame: async () => {
+    const buttonTestkit = await buttonTestkitFactory({dataHook: 'load-game', page});
+    await buttonTestkit.click();
+  }
 });
 
 let driver;
@@ -69,5 +77,19 @@ describe('React application', () => {
     await driver.clickACellAt({x: 1, y: 1});
     await driver.clickACellAt({x: 2, y: 0});
     expect(await driver.getWinnerMessage()).to.equal('Yaniv Won!');
+  });
+
+  it('should save a game', async () => {
+    const player1 = 'Yaniv';
+    const player2 = 'Computer';
+    await driver.navigate();
+    await driver.newGame({player1, player2});
+    await driver.clickACellAt({x: 0, y: 0});
+    await driver.saveGame();
+    await driver.navigate();
+    await driver.loadGame();
+    expect(await driver.getPlayer1Title()).to.equal(player1);
+    expect(await driver.getPlayer2Title()).to.equal(player2);
+    expect(await driver.getACellAt({x: 0, y: 0})).to.equal('X');
   });
 });

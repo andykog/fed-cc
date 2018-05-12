@@ -14,6 +14,18 @@ module.exports = (app, context) => {
   app.use(wixExpressCsrf());
   app.use(wixExpressRequireHttps);
 
+  app.post('/api/game', (req, res) => {
+    res.end();
+  });
+
+  app.get('/api/game', (req, res) => {
+    res.json({
+      player1: 'Yaniv',
+      player2: 'Computer',
+      board: [['X', '', ''], ['', '', ''], ['', '', '']],
+    });
+  });
+
   app.get('/', (req, res) => {
     const renderModel = getRenderModel(req);
     const html = ejs.render(templateFile, renderModel, {cache: isProduction, filename: templatePath});
