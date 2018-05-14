@@ -16,4 +16,21 @@ describe('When rendering', () => {
 
     expect(response.data).to.contain('Wix Full Stack Project Boilerplate');
   });
+
+  it('should return leader board', async () => {
+    const url = app.getUrl('/api/leader-board');
+    const response = await axiosInstance.get(url);
+    expect(response.data).to.be.eql({});
+  });
+
+  it('should save leader board', async () => {
+    const url = app.getUrl('/api/leader-board');
+    const resp1 = await axiosInstance.post(url, {name: 'Andrew'});
+    expect(resp1.data).to.be.eql({'Andrew': 1});
+    const resp2 = await axiosInstance.post(url, {name: 'Andrew'});
+    expect(resp2.data).to.be.eql({'Andrew': 2});
+    const leaderBoard = await axiosInstance.get(url);
+    expect(leaderBoard.data).to.be.eql({Andrew: 2});
+  });
+
 });

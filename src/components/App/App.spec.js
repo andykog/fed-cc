@@ -6,6 +6,7 @@ import i18next from 'i18next';
 import {I18nextProvider} from 'react-i18next';
 import App from './App';
 import translation from '../../assets/locale/messages_en.json';
+import eventually from 'wix-eventually';
 import {
   inputTestkitFactory as enzymeInputTestkitFactory,
   buttonTestkitFactory as enzymeButtonTestkitFactory
@@ -67,7 +68,7 @@ describe('App', () => {
     expect(driver.getACellAt(1)).to.eq('O');
   });
 
-  it('second player should win the game', () => {
+  it('second player should win the game', async () => {
     const player1 = 'Yaniv';
     const player2 = 'Computer';
     driver.render(
@@ -84,6 +85,7 @@ describe('App', () => {
     driver.clickACellAt(7);
     driver.clickACellAt(2);
 
-    expect(driver.getWinnerMessage()).to.eq('Computer Won!');
+
+    eventually(() => expect(driver.getWinnerMessage()).to.eq('Computer Won!'))
   });
 });

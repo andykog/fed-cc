@@ -28,6 +28,7 @@
     "regenerator-runtime": "^0.11.0",
     "wix-axios-config": "latest",
     "wix-bootstrap-ng": "latest",
+    "wix-eventually": "^2.2.0",
     "wix-express-csrf": "latest",
     "wix-express-require-https": "latest",
     "wix-run-mode": "latest",

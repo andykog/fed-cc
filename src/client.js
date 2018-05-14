@@ -10,12 +10,12 @@ import App from './components/App';
 const baseURL = window.__BASEURL__;
 const locale = window.__LOCALE__;
 const staticsBaseUrl = window.__STATICS_BASE_URL__;
-
+const leaderBoard = window.__LEADER_BOARD__;
 wixAxiosConfig(axios, {baseURL});
 
 ReactDOM.render(
   <I18nextProvider i18n={i18n({locale, baseUrl: staticsBaseUrl})}>
-    <App/>
+    <App />
   </I18nextProvider>,
   document.getElementById('root')
 );

@@ -1,10 +1,24 @@
 {
   "version": "0.2.0",
-  "configurations": [{
-    "name": "Launch Mocha",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch via NPM",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "test"
+      ]
+      // "port": 9229
+    },
+    {
+    "name": "Run Tests",
     "type": "node",
     "request": "launch",
-    "program": "${workspaceRoot}/node_modules/yoshi/debug/mocha",
-    "cwd": "${workspaceRoot}"
-  }]
+    "args" : ["test"],
+    // "port": 9229,
+    "program": "${workspaceFolder}/node_modules/.bin/yoshi"
+    }
+   ]
 }

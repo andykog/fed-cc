@@ -11,22 +11,24 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      player1: '',
-      player2: '',
-      winner: '',
-      tie: false,
-      currentPlayer: 'X',
-      board: [['', '', ''], ['', '', ''], ['', '', '']]
+      ...this.getDefaultState(),
+      leaderBoard: window.__LEADER_BOARD__ || {}
     };
   }
 
-  handleCellClick = ({cIndex, rIndex}) => {
+  handleCellClick = async ({cIndex, rIndex}) => {
     const board = this.state.board.map(row => [...row]);
     if (board[rIndex][cIndex] !== '') return;
     board[rIndex][cIndex] = this.state.currentPlayer;
     const status = gameStatus(board);
     if (status === this.state.currentPlayer) {
-      this.setState({winner: this.state.currentPlayer});
+      let {data: leaderBoard} = await axios.post('/api/leader-board', {
+        name: this.getPlayerName(this.state.currentPlayer)
+      });
+      this.setState({
+        leaderBoard,
+        winner: this.state.currentPlayer
+      });
     } else if (status === 'XO') {
       this.setState({tie: true});
     }
@@ -47,6 +49,22 @@ class App extends React.Component {
     const {board, player1, player2} = res.data;
     this.setState({board, player1, player2});
   }
+  getDefaultState = () => {
+    return {
+      player1: '',
+      player2: '',
+      winner: '',
+      tie: false,
+      currentPlayer: 'X',
+      board: [['', '', ''], ['', '', ''], ['', '', '']]
+    }
+  }
+  handleNewGame = () => {
+    this.setState(
+      this.getDefaultState()
+    );
+  }
+  getPlayerName = (value) => value === 'X' ? this.state.player1 : this.state.player2
 
   render() {
     return (
@@ -61,16 +79,20 @@ class App extends React.Component {
         {this.state.player1 && this.state.player2 &&
           <div> Current player:
             <div data-hook="current-player-name">
-              {this.state.currentPlayer === 'X' ? this.state.player1 : this.state.player2}
+              {this.getPlayerName(this.state.currentPlayer)}
             </div>
           </div>
         }
+        <div data-hook='leader-board'>
+          {Object.entries(this.state.leaderBoard).map(([key, value]) => `${key}:${value}`).join(',')}
+        </div>
         {this.state.winner &&
-        <div data-hook="winner">{`${this.state.winner === 'X' ? this.state.player1 : this.state.player2} Won!`}</div>}
+        <div data-hook="winner">{`${this.getPlayerName(this.state.winner)} Won!`}</div>}
         {this.state.tie && <div data-hook="winner">Tie!</div>}
         <div>
-          <Button dataHook="save-game" onClick={() => this.handleSave()}>Save Game</Button>
-          <Button dataHook="load-game" onClick={() => this.handleLoad()}>Load Game</Button>
+          <Button dataHook="save-game" onClick={this.handleSave}>Save Game</Button>
+          <Button dataHook="load-game" onClick={this.handleLoad}>Load Game</Button>
+          <Button dataHook="new-game" onClick={this.handleNewGame}>New Game</Button>
         </div>
       </div>
     );
