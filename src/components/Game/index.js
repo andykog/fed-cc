@@ -4,7 +4,7 @@ import Label from 'wix-style-react/Label';
 
 function Game({player1, player2, board, onCellClick}) {
   return (
-    <div>
+    <div data-hook="game-board">
       <Label dataHook="p1-title">{player1}</Label>
       <Label dataHook="p2-title">{player2}</Label>
       <table>

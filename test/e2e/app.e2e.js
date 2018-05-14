@@ -32,7 +32,11 @@ const appDriver = ({page}) => ({
   loadGame: async () => {
     const buttonTestkit = await buttonTestkitFactory({dataHook: 'load-game', page});
     await buttonTestkit.click();
-  }
+  },
+  getGameBoard: async () => await page.$('[data-hook="game-board"]'),
+  getRegistrationForm: async () => await page.$('[data-hook="registration-form"]'),
+  isPlayerNameVisible: async () => !!await page.$('[data-hook="current-player-name"]'),
+  getCurrentPlayerName: async () => await page.$eval('[data-hook="current-player-name"]', el => el.innerText)
 });
 
 let driver;
@@ -79,7 +83,42 @@ describe('React application', () => {
     expect(await driver.getWinnerMessage()).to.equal('Yaniv Won!');
   });
 
-  it('should save a game', async () => {
+  it('second user should win the game', async () => {
+    const player1 = 'Yaniv';
+    const player2 = 'Computer';
+    await driver.navigate();
+    await driver.newGame({player1, player2});
+    await driver.clickACellAt({x: 0, y: 1});
+    await driver.clickACellAt({x: 0, y: 0});
+    await driver.clickACellAt({x: 0, y: 2});
+    await driver.clickACellAt({x: 1, y: 0});
+    await driver.clickACellAt({x: 1, y: 1});
+    expect(await driver.isWinnerMessageVisible()).to.equal(false);
+    await driver.clickACellAt({x: 2, y: 0});
+    // await page.screenshot({path: 'cat1.png'});
+    expect(await driver.getWinnerMessage()).to.equal(`${player2} Won!`);
+  });
+
+  it('tie', async () => {
+    const player1 = 'Yaniv';
+    const player2 = 'Computer';
+    await driver.navigate();
+    await driver.newGame({player1, player2});
+    await driver.clickACellAt({x: 0, y: 0});
+    await driver.clickACellAt({x: 0, y: 1});
+    await driver.clickACellAt({x: 0, y: 2});
+    await driver.clickACellAt({x: 1, y: 0});
+    await driver.clickACellAt({x: 1, y: 2});
+    expect(await driver.isWinnerMessageVisible()).to.equal(false);
+    await driver.clickACellAt({x: 1, y: 1});
+    await driver.clickACellAt({x: 2, y: 0});
+    await driver.clickACellAt({x: 2, y: 2});
+    await driver.clickACellAt({x: 2, y: 1});
+    await page.screenshot({path: 'cat1.png'});
+    expect(await driver.getWinnerMessage()).to.equal(`Tie!`);
+  });
+
+  xit('should save a game', async () => {
     const player1 = 'Yaniv';
     const player2 = 'Computer';
     await driver.navigate();
@@ -91,5 +130,39 @@ describe('React application', () => {
     expect(await driver.getPlayer1Title()).to.equal(player1);
     expect(await driver.getPlayer2Title()).to.equal(player2);
     expect(await driver.getACellAt({x: 0, y: 0})).to.equal('X');
+  });
+
+  it('shouldn\'t show game board at load', async () => {
+    await driver.navigate();
+    expect(await driver.getGameBoard()).to.equal(null);
+  });
+
+  it('should hide registration form after start', async () => {
+    const player1 = 'Yaniv';
+    const player2 = 'Computer';
+    await driver.navigate();
+    expect(await driver.getRegistrationForm()).to.not.equal(null);
+    await driver.newGame({player1, player2});
+    expect(await driver.getRegistrationForm()).to.equal(null);
+  });
+
+  it('should block cell from being clicked twice', async () => {
+    const player1 = 'Yaniv';
+    const player2 = 'Computer';
+    await driver.navigate();
+    await driver.newGame({player1, player2});
+    await driver.clickACellAt({x: 0, y: 0});
+    await driver.clickACellAt({x: 0, y: 0});
+    expect(await driver.getACellAt({x: 0, y: 0})).to.equal('X');
+  });
+
+  it('should print first player\'s name at start', async () => {
+    const player1 = 'Yaniv';
+    const player2 = 'Computer';
+    await driver.navigate();
+    expect(await driver.isPlayerNameVisible()).to.equal(false);
+    await driver.newGame({player1, player2});
+    expect(await driver.isPlayerNameVisible()).to.equal(true);
+    expect(await driver.getCurrentPlayerName()).to.equal('Yaniv');
   });
 });

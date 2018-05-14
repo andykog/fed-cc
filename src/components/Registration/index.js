@@ -17,7 +17,7 @@ export default class Registration extends Component {
 
   render() {
     return (
-      <div>
+      <div data-hook="registration-form">
         <Input dataHook="p1-input" onChange={evt => this.setState({player1: evt.target.value})}/>
         <Input dataHook="p2-input" onChange={evt => this.setState({player2: evt.target.value})}/>
         <Button dataHook="new-game" onClick={() => this.props.onNewGame({player1: this.state.player1, player2: this.state.player2})}>New Game</Button>

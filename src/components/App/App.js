@@ -14,6 +14,7 @@ class App extends React.Component {
       player1: '',
       player2: '',
       winner: '',
+      tie: false,
       currentPlayer: 'X',
       board: [['', '', ''], ['', '', ''], ['', '', '']]
     };
@@ -21,9 +22,13 @@ class App extends React.Component {
 
   handleCellClick = ({cIndex, rIndex}) => {
     const board = this.state.board.map(row => [...row]);
+    if (board[rIndex][cIndex] !== '') return;
     board[rIndex][cIndex] = this.state.currentPlayer;
-    if (gameStatus(board) === this.state.currentPlayer) {
+    const status = gameStatus(board);
+    if (status === this.state.currentPlayer) {
       this.setState({winner: this.state.currentPlayer});
+    } else if (status === 'XO') {
+      this.setState({tie: true});
     }
     const nextPlayer = this.state.currentPlayer === 'X' ? 'O' : 'X';
     this.setState({board, currentPlayer: nextPlayer});
@@ -46,9 +51,23 @@ class App extends React.Component {
   render() {
     return (
       <div className={s.root}>
-        <Registration onNewGame={({player1, player2}) => this.setState({player1, player2})}/>
-        <Game onCellClick={this.handleCellClick} board={this.state.board} player1={this.state.player1} player2={this.state.player2}/>
-        {this.state.winner && <div data-hook="winner">{`${this.state.winner === 'X' ? this.state.player1 : this.state.player2} Won!`}</div>}
+        {(!this.state.player1 || !this.state.player2) &&
+          <Registration onNewGame={({player1, player2}) => this.setState({player1, player2})}/>
+        }
+        {this.state.player1 && this.state.player2 &&
+        <Game onCellClick={this.handleCellClick} board={this.state.board} player1={this.state.player1}
+              player2={this.state.player2}/>
+        }
+        {this.state.player1 && this.state.player2 &&
+          <div> Current player:
+            <div data-hook="current-player-name">
+              {this.state.currentPlayer === 'X' ? this.state.player1 : this.state.player2}
+            </div>
+          </div>
+        }
+        {this.state.winner &&
+        <div data-hook="winner">{`${this.state.winner === 'X' ? this.state.player1 : this.state.player2} Won!`}</div>}
+        {this.state.tie && <div data-hook="winner">Tie!</div>}
         <div>
           <Button dataHook="save-game" onClick={() => this.handleSave()}>Save Game</Button>
           <Button dataHook="load-game" onClick={() => this.handleLoad()}>Load Game</Button>
